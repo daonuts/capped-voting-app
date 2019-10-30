@@ -19,11 +19,11 @@
   "environments": {
     "default": {
       "network": "development",
-      "appName": "capped-voting-app.aragonpm.eth"
+      "appName": "capped-voting-app.open.aragonpm.eth"
     },
     "docker": {
       "network": "docker",
-      "appName": "capped-voting-app.aragonpm.eth"
+      "appName": "capped-voting-app.open.aragonpm.eth"
     },
     "rinkeby": {
       "registry": "0x98df287b6c145399aaa709692c8d308357bc085d",

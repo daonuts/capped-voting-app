@@ -89,7 +89,7 @@ contract Template is TemplateBase {
         voting.initialize(contrib, currency, uint64(60*PCT), uint64(15*PCT), uint64(1 days));
         emit InstalledApp(voting, cappedVotingAppId);
 
-        acl.createPermission(root, voting, voting.CREATE_VOTES_ROLE(), root);
+        acl.createPermission(ANY_ENTITY, voting, voting.CREATE_VOTES_ROLE(), root);
         acl.createPermission(this, contribManager, contribManager.MINT_ROLE(), this);
         acl.createPermission(this, currencyManager, currencyManager.MINT_ROLE(), this);
 

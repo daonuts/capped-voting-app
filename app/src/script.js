@@ -61,7 +61,7 @@ const retryEvery = async (
 // Get the token address to initialize ourselves
 retryEvery(() =>
   app
-    .call('token')
+    .call('token0')
     .toPromise()
     .then(initialize)
     .catch(err => {
@@ -89,6 +89,8 @@ async function initialize(tokenAddr) {
           return { ...nextState, isSyncing: false }
         case 'CastVote':
           return castVote(nextState, returnValues)
+        case 'ExtendVote':
+          return extendVote(nextState, returnValues)
         case 'ExecuteVote':
           return executeVote(nextState, returnValues, {
             blockNumber,
@@ -188,6 +190,20 @@ async function castVote(state, { voteId, voter }) {
   })
 
   return updateState({ ...state, connectedAccountVotes }, voteId, transform)
+}
+
+async function extendVote(state, { voteId }) {
+  // Let's just reload the entire vote again
+  console.log("VOTE EXTENDED")
+  const transform = async vote => ({
+    ...vote,
+    data: {
+      ...vote.data,
+      ...(await loadVoteData(voteId)),
+    },
+  })
+
+  return updateState(state, voteId, transform)
 }
 
 async function executeVote(
@@ -370,11 +386,13 @@ function marshallVote({
   nay,
   snapshotBlock,
   startDate,
+  extension,
   supportRequired,
   votingPower,
   yea,
   script,
 }) {
+  console.log("extension", extension)
   return {
     executed,
     minAcceptQuorum,
@@ -383,6 +401,7 @@ function marshallVote({
     supportRequired,
     votingPower,
     yea,
+    extension: extension * 1000,
     // Like times, blocks should be safe to represent as real numbers
     snapshotBlock: parseInt(snapshotBlock, 10),
     startDate: marshallDate(startDate),

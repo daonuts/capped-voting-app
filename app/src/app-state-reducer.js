@@ -38,12 +38,13 @@ function appStateReducer(state) {
     votes: votes
       ? votes.map(vote => {
           const { data } = vote
+          console.log("vote data", data)
           return {
             ...vote,
             data: {
               ...data,
               executionDate: data.executionDate && new Date(data.executionDate),
-              endDate: new Date(data.startDate + voteTime),
+              endDate: new Date(data.startDate + voteTime + data.extension),
               minAcceptQuorum: new BN(data.minAcceptQuorum),
               nay: new BN(data.nay),
               startDate: new Date(data.startDate),
