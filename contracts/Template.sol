@@ -54,6 +54,7 @@ contract TemplateBase is APMNamehash {
 contract Template is TemplateBase {
     /* MiniMeTokenFactory tokenFactory; */
 
+    uint constant TOKEN_UNIT = 10 ** 18;
     uint64 constant PCT = 10 ** 16;
     address constant ANY_ENTITY = address(-1);
 
@@ -86,15 +87,21 @@ contract Template is TemplateBase {
         emit InstalledApp(contribManager, tokenManagerAppId);
         currencyManager.initialize(MiniMeToken(currency), true, 0);
         emit InstalledApp(currencyManager, tokenManagerAppId);
-        voting.initialize(contrib, currency, uint64(60*PCT), uint64(15*PCT), uint64(1 days));
+        voting.initialize(contrib, currency, uint64(60*PCT), uint64(15*PCT), uint64(20 minutes));
         emit InstalledApp(voting, cappedVotingAppId);
 
         acl.createPermission(ANY_ENTITY, voting, voting.CREATE_VOTES_ROLE(), root);
         acl.createPermission(this, contribManager, contribManager.MINT_ROLE(), this);
         acl.createPermission(this, currencyManager, currencyManager.MINT_ROLE(), this);
 
-        contribManager.mint(root, 100000 * 10**18); // Give 1 token to each holder
-        currencyManager.mint(root, 100000 * 10**18); // Give 1 token to each holder
+        contribManager.mint(root, 100000 * TOKEN_UNIT);
+        currencyManager.mint(root, 100000 * TOKEN_UNIT);
+        contribManager.mint(0x8401Eb5ff34cc943f096A32EF3d5113FEbE8D4Eb, 100000*TOKEN_UNIT);
+        currencyManager.mint(0x8401Eb5ff34cc943f096A32EF3d5113FEbE8D4Eb, 100000*TOKEN_UNIT);
+        contribManager.mint(0x306469457266CBBe7c0505e8Aad358622235e768, 100000*TOKEN_UNIT);
+        currencyManager.mint(0x306469457266CBBe7c0505e8Aad358622235e768, 100000*TOKEN_UNIT);
+        contribManager.mint(0xd873F6DC68e3057e4B7da74c6b304d0eF0B484C7, 100000*TOKEN_UNIT);
+        currencyManager.mint(0xd873F6DC68e3057e4B7da74c6b304d0eF0B484C7, 100000*TOKEN_UNIT);
 
         // Clean up permissions
 

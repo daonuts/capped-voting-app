@@ -1,3 +1,5 @@
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
 import Aragon, { events } from '@aragon/api'
 import { addressesEqual } from './web3-utils'
 import voteSettings from './vote-settings'
@@ -344,6 +346,7 @@ function loadVoteData(voteId) {
     app
       .call('getVote', voteId)
       .toPromise()
+      .then(vote => {console.log("vote", vote);return vote;})
       .then(vote => loadVoteDescription(marshallVote(vote)))
       .catch(err => {
         console.error(`Error fetching vote (${voteId})`, err)

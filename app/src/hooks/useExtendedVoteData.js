@@ -24,18 +24,18 @@ export default function useExtendedVoteData(vote) {
   )
   const canUserVote = usePromise(canUserVotePromise, [], false)
 
-  const userBalancePromise = useMemo(() => {
-    if (!vote) {
-      return -1
-    }
-    return getUserBalanceAt(
-      connectedAccount,
-      vote.data.snapshotBlock,
-      tokenContract,
-      tokenDecimals
-    )
-  }, [connectedAccount, tokenContract, tokenDecimals, vote])
-  const userBalance = usePromise(userBalancePromise, [], -1)
+  // const userBalancePromise = useMemo(() => {
+  //   if (!vote) {
+  //     return -1
+  //   }
+  //   return getUserBalanceAt(
+  //     connectedAccount,
+  //     vote.data.snapshotBlock,
+  //     tokenContract,
+  //     tokenDecimals
+  //   )
+  // }, [connectedAccount, tokenContract, tokenDecimals, vote])
+  // const userBalance = usePromise(userBalancePromise, [], -1)
 
   const userBalanceNowPromise = useMemo(
     () => getUserBalanceNow(connectedAccount, tokenContract, tokenDecimals),
@@ -43,11 +43,13 @@ export default function useExtendedVoteData(vote) {
   )
   const userBalanceNow = usePromise(userBalanceNowPromise, [], -1)
 
+  console.log("HERE", canExecute, canUserVote)
+
   return {
     canExecute,
     canUserVote,
-    userBalance,
-    userBalancePromise,
+    // userBalance,
+    // userBalancePromise,
     userBalanceNow,
     userBalanceNowPromise,
     canUserVotePromise,

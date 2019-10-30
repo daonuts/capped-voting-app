@@ -38,7 +38,6 @@ function appStateReducer(state) {
     votes: votes
       ? votes.map(vote => {
           const { data } = vote
-          console.log("vote data", data)
           return {
             ...vote,
             data: {

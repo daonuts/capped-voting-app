@@ -6,7 +6,8 @@ import { VOTE_YEA } from '../vote-types'
 
 function VoteCasted({ vote }) {
   const { connectedAccountVote } = vote
-  const { userBalance } = useExtendedVoteData(vote)
+  // const { userBalance } = useExtendedVoteData(vote)
+  const { userBalanceNow } = useExtendedVoteData(vote)
   const { tokenSymbol } = useAppState()
   const theme = useTheme()
 
@@ -76,7 +77,7 @@ function VoteCasted({ vote }) {
                 font-weight: 600;
               `}
             >
-              {userBalance === -1 ? '…' : userBalance} {tokenSymbol}
+              {/*userBalance === -1 ? '…' : userBalance*/userBalanceNow === -1 ? '…' : userBalanceNow} {tokenSymbol}
             </span>
             .
           </div>

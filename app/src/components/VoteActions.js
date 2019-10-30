@@ -30,10 +30,10 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
   const {
     canUserVote,
     canExecute,
-    userBalance,
+    // userBalance,
     userBalanceNow,
     canUserVotePromise,
-    userBalancePromise,
+    // userBalancePromise,
     userBalanceNowPromise,
     canExecutePromise,
   } = useExtendedVoteData(vote)
@@ -46,7 +46,7 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
       await Promise.all([
         canUserVotePromise,
         canExecutePromise,
-        userBalancePromise,
+        // userBalancePromise,
         userBalanceNowPromise,
       ])
       if (!cancelled) {
@@ -60,7 +60,7 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
       cancelled = true
     }
   }, [
-    userBalancePromise,
+    // userBalancePromise,
     canUserVotePromise,
     canExecutePromise,
     userBalanceNowPromise,
@@ -120,7 +120,7 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
               snapshotBlock={snapshotBlock}
               startDate={startDate}
               tokenSymbol={tokenSymbol}
-              userBalance={userBalance}
+              // {userBalance={userBalance}}
               userBalanceNow={userBalanceNow}
             />
           </React.Fragment>
@@ -167,20 +167,22 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
     )
   }
 
-  return (
-    <div>
-      <Buttons disabled />
-      <Info mode="warning">
-        {userBalanceNow > 0
-          ? 'Although the currently connected account holds tokens, it'
-          : 'The currently connected account'}{' '}
-        did not hold any <strong>{tokenSymbol}</strong> tokens when this vote
-        began ({formatDate(startDate)}) and therefore cannot participate in this
-        vote. Make sure your accounts are holding <strong>{tokenSymbol}</strong>{' '}
-        at the time a vote begins if you'd like to vote using this Voting app.
-      </Info>
-    </div>
-  )
+  return null
+
+  // return (
+  //   <div>
+  //     <Buttons disabled />
+  //     <Info mode="warning">
+  //       {userBalanceNow > 0
+  //         ? 'Although the currently connected account holds tokens, it'
+  //         : 'The currently connected account'}{' '}
+  //       did not hold any <strong>{tokenSymbol}</strong> tokens when this vote
+  //       began ({formatDate(startDate)}) and therefore cannot participate in this
+  //       vote. Make sure your accounts are holding <strong>{tokenSymbol}</strong>{' '}
+  //       at the time a vote begins if you'd like to vote using this Voting app.
+  //     </Info>
+  //   </div>
+  // )
 })
 
 const Buttons = ({ onClickYes = noop, onClickNo = noop, disabled = false }) => (
@@ -215,15 +217,15 @@ const TokenReference = ({
   snapshotBlock,
   startDate,
   tokenSymbol,
-  userBalance,
+  // userBalance,
   userBalanceNow,
 }) => (
   <Info>
     Voting with{' '}
     <strong>
-      {userBalance} {tokenSymbol}
+      {/*userBalance*/userBalanceNow} {tokenSymbol}
     </strong>{' '}
-    due to the snapshot taken at block <strong>{snapshotBlock}</strong> at{' '}
+    {/*due to the snapshot taken at block <strong>{snapshotBlock}</strong> at{' '}
     <strong>{formatDate(startDate)}</strong>.{' '}
     {userBalance !== userBalanceNow ? (
       <span>
@@ -234,8 +236,8 @@ const TokenReference = ({
         )
       </span>
     ) : (
-      ''
-    )}
+      ''}
+    )}*/}
   </Info>
 )
 
