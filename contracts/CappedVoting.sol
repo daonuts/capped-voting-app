@@ -34,6 +34,7 @@ contract CappedVoting is IForwarder, AragonApp {
     string private constant ERROR_CAN_NOT_EXECUTE = "VOTING_CAN_NOT_EXECUTE";
     string private constant ERROR_CAN_NOT_FORWARD = "VOTING_CAN_NOT_FORWARD";
     string private constant ERROR_NO_VOTING_POWER = "VOTING_NO_VOTING_POWER";
+    string private constant ERROR_SCRIPT_EXISTS = "SCRIPT_EXISTS";
 
     enum VoterState { Absent, Yea, Nay }
 
@@ -56,6 +57,8 @@ contract CappedVoting is IForwarder, AragonApp {
     uint64 public supportRequiredPct;
     uint64 public minAcceptQuorumPct;
     uint64 public voteTime;
+
+    mapping(bytes32 => bool) internal scriptSigs;
 
     // We are mimicing an array, we use a mapping instead to make app upgrade more graceful
     mapping (uint256 => Vote) internal votes;
@@ -298,6 +301,10 @@ contract CappedVoting is IForwarder, AragonApp {
         internal
         returns (uint256 voteId)
     {
+        bytes32 scriptSig = keccak256(_executionScript);
+        require(!scriptSigs[scriptSig], ERROR_SCRIPT_EXISTS);
+        scriptSigs[scriptSig] = true;
+
         uint64 snapshotBlock = getBlockNumber64() - 1; // avoid double voting in this very block
         uint256 votingPower = getTotalVoterWeight();
         require(votingPower > 0, ERROR_NO_VOTING_POWER);
@@ -372,6 +379,9 @@ contract CappedVoting is IForwarder, AragonApp {
 
         bytes memory input = new bytes(0); // TODO: Consider input for voting scripts
         runScript(vote_.executionScript, input, new address[](0));
+
+        bytes32 scriptSig = keccak256(vote_.executionScript);
+        delete scriptSigs[scriptSig];
 
         emit ExecuteVote(_voteId);
     }
