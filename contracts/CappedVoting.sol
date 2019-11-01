@@ -380,6 +380,9 @@ contract CappedVoting is IForwarder, AragonApp {
         bytes memory input = new bytes(0); // TODO: Consider input for voting scripts
         runScript(vote_.executionScript, input, new address[](0));
 
+        bytes32 scriptSig = keccak256(vote_.executionScript);
+        delete scriptSigs[scriptSig];
+
         emit ExecuteVote(_voteId);
     }
 
