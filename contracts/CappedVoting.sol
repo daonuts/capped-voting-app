@@ -335,12 +335,11 @@ contract CappedVoting is IForwarder, AragonApp {
     {
         Vote storage vote_ = votes[_voteId];
 
-        // This could re-enter, though we can assume the governance token is not malicious
         uint256 voterStake = getVoterWeight(_voter);
         VoterState state = vote_.voters[_voter];
 
-        uint256 totalVotes = vote_.yea.add(vote_.nay);
-        bool supportedBefore = _isValuePct(vote_.yea, totalVotes, vote_.supportRequiredPct);
+        uint256 totalVotesBefore = vote_.yea.add(vote_.nay);
+        bool supportedBefore = _isValuePct(vote_.yea, totalVotesBefore, vote_.supportRequiredPct);
 
         // If voter had previously voted, decrease count
         /* if (state == VoterState.Yea) {
@@ -357,8 +356,12 @@ contract CappedVoting is IForwarder, AragonApp {
 
         vote_.voters[_voter] = _supports ? VoterState.Yea : VoterState.Nay;
 
-        if (_isClosingWindow(vote_)) {
-            bool supportedAfter = _isValuePct(vote_.yea, totalVotes, vote_.supportRequiredPct);
+        // are we in the closing window AND the vote hasn't already been extended?
+        if (_isClosingWindow(vote_) && vote_.extension == 0) {
+        /* if (_isClosingWindow(vote_)) { */
+            uint256 totalVotesAfter = vote_.yea.add(vote_.nay);
+            bool supportedAfter = _isValuePct(vote_.yea, totalVotesAfter, vote_.supportRequiredPct);
+
             if(supportedBefore != supportedAfter) {
                 vote_.extension = vote_.extension.add(voteTime.div(2));
                 emit ExtendVote(_voteId);
@@ -397,7 +400,8 @@ contract CappedVoting is IForwarder, AragonApp {
     } */
 
     function _isClosingWindow(Vote storage vote_) internal view returns (bool) {
-        return getTimestamp64() > vote_.startDate.add(voteTime.add(vote_.extension).mul(3).div(4));
+        /* return getTimestamp64() > vote_.startDate.add(voteTime.add(vote_.extension).mul(3).div(4)); */
+        return getTimestamp64() > vote_.startDate.add(voteTime.mul(3).div(4));
     }
 
     /**

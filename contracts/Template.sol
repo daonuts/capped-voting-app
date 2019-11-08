@@ -87,7 +87,7 @@ contract Template is TemplateBase {
         emit InstalledApp(contribManager, tokenManagerAppId);
         currencyManager.initialize(MiniMeToken(currency), true, 0);
         emit InstalledApp(currencyManager, tokenManagerAppId);
-        voting.initialize(contrib, currency, uint64(60*PCT), uint64(15*PCT), uint64(20 minutes));
+        voting.initialize(contrib, currency, uint64(60*PCT), uint64(15*PCT), uint64(1 minutes));
         emit InstalledApp(voting, cappedVotingAppId);
 
         acl.createPermission(ANY_ENTITY, voting, voting.CREATE_VOTES_ROLE(), root);

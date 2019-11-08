@@ -4,5 +4,5 @@ Capped Voting is a vote scheme with weight determined by the minimum of two toke
 
 ### additional features
 
-- votes that flip the result within a closing window (75%-100% poll duration) will automatically extend vote duration
+- votes that flip the result within a closing window (75%-100% poll duration) will automatically extend vote duration by 50%
 - duplicate scripts are disallowed at the same time

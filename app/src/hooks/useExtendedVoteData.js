@@ -43,8 +43,6 @@ export default function useExtendedVoteData(vote) {
   )
   const userBalanceNow = usePromise(userBalanceNowPromise, [], -1)
 
-  console.log("HERE", canExecute, canUserVote)
-
   return {
     canExecute,
     canUserVote,
