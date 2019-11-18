@@ -1,6 +1,6 @@
 {
 	"name": "@daonuts/capped-voting",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Capped, dual-token voting. vote_weight = min(token1, token2)",
 	"dependencies": {
 		"@aragon/api": "^2.0.0-beta.6",
@@ -9,7 +9,7 @@
 		"@aragon/apps-token-manager": "^2.1.0",
 		"@aragon/os": "^4.3.0",
 		"@aragon/ui": "^1.0.0-alpha.28",
-		"@daonuts/token": "^0.0.1",
+		"@daonuts/token": "^0.0.5",
 		"bases": "^0.2.1",
 		"bignumber.js": "^9.0.0",
 		"bn.js": "^4.11.8",
@@ -55,6 +55,7 @@
 		"babel-preset-stage-2": "^6.24.1",
 		"homedir": "^0.6.0",
 		"parcel-bundler": "^1.12.4",
+		"solidity-sha3": "^0.4.1",
 		"truffle-extract": "^1.2.1"
 	},
 	"scripts": {

@@ -11,7 +11,8 @@ const EVMScriptRegistryFactory = artifacts.require('@aragon/os/contracts/factory
 const ACL = artifacts.require('@aragon/os/contracts/acl/ACL')
 const Kernel = artifacts.require('@aragon/os/contracts/kernel/Kernel')
 
-const MiniMeToken = artifacts.require('@aragon/apps-shared-minime/contracts/MiniMeToken')
+// const MiniMeToken = artifacts.require('@aragon/apps-shared-minime/contracts/MiniMeToken')
+const Token = artifacts.require('@daonuts/token/contracts/Token')
 
 const Voting = artifacts.require('VotingMock')
 
@@ -31,7 +32,7 @@ const VOTER_STATE = ['ABSENT', 'YEA', 'NAY'].reduce((state, key, index) => {
 
 
 contract('Voting App', accounts => {
-    let votingBase, daoFact, voting, token, executionTarget
+    let votingBase, daoFact, voting, token0, token1, executionTarget
 
     let APP_MANAGER_ROLE
     let CREATE_VOTES_ROLE, MODIFY_SUPPORT_ROLE, MODIFY_QUORUM_ROLE
@@ -78,16 +79,17 @@ contract('Voting App', accounts => {
         const minimumAcceptanceQuorum = pct16(20)
 
         beforeEach(async () => {
-            token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', 0, 'n', true) // empty parameters minime
+            token0 = await Token.new('n', 0, 'n', false)
+            token1 = await Token.new('n', 0, 'n', true)
 
-            await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+            await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
 
             executionTarget = await ExecutionTarget.new()
         })
 
         it('fails on reinitialization', async () => {
             return assertRevert(async () => {
-                await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+                await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
             })
         })
 
@@ -95,7 +97,7 @@ contract('Voting App', accounts => {
             const newVoting = await Voting.new()
             assert.isTrue(await newVoting.isPetrified())
             return assertRevert(async () => {
-                await newVoting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+                await newVoting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
             })
         })
 
@@ -153,13 +155,18 @@ contract('Voting App', accounts => {
             const minimumAcceptanceQuorum = pct16(20)
 
             beforeEach(async () => {
-                token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', decimals, 'n', true) // empty parameters minime
+                token0 = await Token.new('n', decimals, 'n', false)
+                token1 = await Token.new('n', decimals, 'n', true)
 
-                await token.generateTokens(holder20, bigExp(20, decimals))
-                await token.generateTokens(holder29, bigExp(29, decimals))
-                await token.generateTokens(holder51, bigExp(51, decimals))
+                await token0.generateTokens(holder20, bigExp(20, decimals))
+                await token0.generateTokens(holder29, bigExp(29, decimals))
+                await token0.generateTokens(holder51, bigExp(51, decimals))
 
-                await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+                await token1.generateTokens(holder20, bigExp(20, decimals))
+                await token1.generateTokens(holder29, bigExp(29, decimals))
+                await token1.generateTokens(holder51, bigExp(51, decimals))
+
+                await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
 
                 executionTarget = await ExecutionTarget.new()
             })
@@ -292,13 +299,13 @@ contract('Voting App', accounts => {
                 })
 
                 it('token transfers dont affect voting', async () => {
-                    await token.transfer(nonHolder, bigExp(29, decimals), { from: holder29 })
+                    await token1.transfer(nonHolder, bigExp(29, decimals), { from: holder29 })
 
                     await voting.vote(voteId, true, true, { from: holder29 })
                     const state = await voting.getVote(voteId)
 
                     assert.equal(state[6].toString(), bigExp(29, decimals).toString(), 'yea vote should have been counted')
-                    assert.equal(await token.balanceOf(holder29), 0, 'balance should be 0 at current block')
+                    assert.equal(await token1.balanceOf(holder29), 0, 'balance should be 0 at current block')
                 })
 
                 it('throws when non-holder votes', async () => {
@@ -369,24 +376,25 @@ contract('Voting App', accounts => {
 
     context('wrong initializations', () => {
         beforeEach(async() => {
-            token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', 0, 'n', true) // empty parameters minime
+            token0 = await Token.new('n', 0, 'n', false) // empty parameters minime
+            token1 = await Token.new('n', 0, 'n', true) // empty parameters minime
         })
 
         it('fails if min acceptance quorum is greater than min support', () => {
             const neededSupport = pct16(20)
             const minimumAcceptanceQuorum = pct16(50)
             return assertRevert(async() => {
-                await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+                await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
             })
         })
 
         it('fails if min support is 100% or more', async() => {
             const minimumAcceptanceQuorum = pct16(20)
             await assertRevert(async() => {
-                await voting.initialize(token.address, pct16(101), minimumAcceptanceQuorum, votingTime)
+                await voting.initialize(token0.address, token1.address, pct16(101), minimumAcceptanceQuorum, votingTime)
             })
             return assertRevert(async() => {
-                await voting.initialize(token.address, pct16(100), minimumAcceptanceQuorum, votingTime)
+                await voting.initialize(token0.address, token1.address, pct16(100), minimumAcceptanceQuorum, votingTime)
             })
         })
     })
@@ -396,9 +404,10 @@ contract('Voting App', accounts => {
         const minimumAcceptanceQuorum = pct16(20)
 
         beforeEach(async() => {
-            token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', 0, 'n', true) // empty parameters minime
+            token0 = await Token.new('n', 0, 'n', false) // empty parameters minime
+            token1 = await Token.new('n', 0, 'n', true) // empty parameters minime
 
-            await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+            await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
         })
 
         it('fails creating a survey if token has no holder', async () => {
@@ -415,11 +424,13 @@ contract('Voting App', accounts => {
         const minimumAcceptanceQuorum = pct16(20)
 
         beforeEach(async () => {
-            token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', 0, 'n', true) // empty parameters minime
+            token0 = await Token.new('n', 0, 'n', false) // empty parameters minime
+            token1 = await Token.new('n', 0, 'n', true) // empty parameters minime
 
-            await token.generateTokens(holder, 1)
+            await token0.generateTokens(holder, 1)
+            await token1.generateTokens(holder, 1)
 
-            await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+            await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
         })
 
         it('new vote cannot be executed before voting', async () => {
@@ -464,12 +475,16 @@ contract('Voting App', accounts => {
         const minimumAcceptanceQuorum = pct16(20)
 
         beforeEach(async () => {
-            token = await MiniMeToken.new(NULL_ADDRESS, NULL_ADDRESS, 0, 'n', 0, 'n', true) // empty parameters minime
+            token0 = await Token.new('n', 0, 'n', false) // empty parameters minime
+            token1 = await Token.new('n', 0, 'n', true) // empty parameters minime
 
-            await token.generateTokens(holder1, 1)
-            await token.generateTokens(holder2, 2)
+            await token0.generateTokens(holder1, 1)
+            await token0.generateTokens(holder2, 2)
 
-            await voting.initialize(token.address, neededSupport, minimumAcceptanceQuorum, votingTime)
+            await token1.generateTokens(holder1, 1)
+            await token1.generateTokens(holder2, 2)
+
+            await voting.initialize(token0.address, token1.address, neededSupport, minimumAcceptanceQuorum, votingTime)
         })
 
         it('new vote cannot be executed before holder2 voting', async () => {

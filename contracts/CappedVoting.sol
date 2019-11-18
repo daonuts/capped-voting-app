@@ -356,14 +356,15 @@ contract CappedVoting is IForwarder, AragonApp {
 
         vote_.voters[_voter] = _supports ? VoterState.Yea : VoterState.Nay;
 
-        // are we in the closing window AND the vote hasn't already been extended?
-        if (_isClosingWindow(vote_) && vote_.extension == 0) {
-        /* if (_isClosingWindow(vote_)) { */
+        /* if (_isClosingWindow(vote_) && vote_.extension == 0) { */
+        if (_isClosingWindow(vote_)) {
             uint256 totalVotesAfter = vote_.yea.add(vote_.nay);
             bool supportedAfter = _isValuePct(vote_.yea, totalVotesAfter, vote_.supportRequiredPct);
 
             if(supportedBefore != supportedAfter) {
-                vote_.extension = vote_.extension.add(voteTime.div(2));
+                /* vote_.extension = vote_.extension.add(voteTime.div(2)); */
+                // extension is reduced by half each time
+                vote_.extension = vote_.extension.add((voteTime - vote_.extension).div(2));
                 emit ExtendVote(_voteId);
             }
         }
@@ -393,14 +394,7 @@ contract CappedVoting is IForwarder, AragonApp {
         return getTimestamp64() < vote_.startDate.add(voteTime).add(vote_.extension) && !vote_.executed;
     }
 
-    /* function closingWindow(uint256 _voteId) public view returns (uint64, uint64, uint64, bool) {
-        Vote storage vote_ = votes[_voteId];
-        uint64 window = voteTime.add(vote_.extension).mul(3).div(4);
-        return (getTimestamp64(), vote_.startDate, window, _isClosingWindow(vote_));
-    } */
-
     function _isClosingWindow(Vote storage vote_) internal view returns (bool) {
-        /* return getTimestamp64() > vote_.startDate.add(voteTime.add(vote_.extension).mul(3).div(4)); */
         return getTimestamp64() > vote_.startDate.add(voteTime.mul(3).div(4));
     }
 

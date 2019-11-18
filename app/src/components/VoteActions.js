@@ -22,8 +22,8 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
   const theme = useTheme()
   const connectedAccount = useConnectedAccount()
   const { tokenSymbol } = useAppState()
-  const [changeVote, setChangeVote] = useState(false)
-  const handleChangeVote = useCallback(() => setChangeVote(true), [])
+  // const [changeVote, setChangeVote] = useState(false)
+  // const handleChangeVote = useCallback(() => setChangeVote(true), [])
 
   const { connectedAccountVote, data } = vote
   const { snapshotBlock, startDate, open } = data
@@ -89,26 +89,26 @@ const VoteActions = React.memo(({ vote, onVoteYes, onVoteNo, onExecute }) => {
     )
   }
 
-  if (canUserVote && hasVoted && !changeVote) {
-    return (
-      <div>
-        <Button
-          mode="strong"
-          onClick={handleChangeVote}
-          wide
-          css={`
-            margin-bottom: ${2 * GU}px;
-          `}
-        >
-          Change my vote
-        </Button>
-        <Info>
-          While the voting period is open, you can{' '}
-          <strong>change your vote</strong> as many times as you wish.
-        </Info>
-      </div>
-    )
-  }
+  // if (canUserVote && hasVoted && !changeVote) {
+  //   return (
+  //     <div>
+  //       <Button
+  //         mode="strong"
+  //         onClick={handleChangeVote}
+  //         wide
+  //         css={`
+  //           margin-bottom: ${2 * GU}px;
+  //         `}
+  //       >
+  //         Change my vote
+  //       </Button>
+  //       <Info>
+  //         While the voting period is open, you can{' '}
+  //         <strong>change your vote</strong> as many times as you wish.
+  //       </Info>
+  //     </div>
+  //   )
+  // }
 
   if (canUserVote) {
     return (
