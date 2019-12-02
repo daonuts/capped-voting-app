@@ -1,6 +1,6 @@
 {
 	"name": "@daonuts/capped-voting",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Capped, dual-token voting. vote_weight = min(token1, token2)",
 	"dependencies": {
 		"@aragon/api": "^2.0.0-beta.6",
@@ -15,7 +15,7 @@
 		"bn.js": "^4.11.8",
 		"core-js": "^3.1.4",
 		"date-fns": "2.0.0-alpha.22",
-		"ethers": "^4.0.38",
+		"ethers": "^4.0.40",
 		"onecolor": "^3.1.0",
 		"prop-types": "^15.7.2",
 		"react": "^16.8.6",
